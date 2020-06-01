@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  Valhalla:
+    image: traefik:v1.7
+    command: --api --docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  Moneta:
+    image: ${MONETA_IMAGE}
+    depends_on:
+      - Redis
+    environment:
+      - NCRYPT_API_API_BASE_URL=${NCRYPT_API_API_BASE_URL}
+      - NCRYPT_API_APP_BASE_URL=${NCRYPT_API_APP_BASE_URL}
+      - NCRYPT_API_STORAGE_DRIVER=${NCRYPT_API_STORAGE_DRIVER}
+      - NCRYPT_API_REDIS_HOST=${NCRYPT_API_REDIS_HOST}
+      - NCRYPT_API_REDIS_PORT=${NCRYPT_API_REDIS_PORT}
+      - NCRYPT_API_REDIS_DB=${NCRYPT_API_REDIS_DB}
+      - NCRYPT_API_REDIS_PASSWORD=${NCRYPT_API_REDIS_PASSWORD}
+    labels:
+      - "traefik.frontend.rule=Host:api.ncrypt.site"
+
+  Redis:
+    image: redis:6-alpine
+
+  Aphrodite:
+    image: ${APHRODITE_IMAGE}
+    labels:
+      - "traefik.frontend.rule=Host:ncrypt.site"
