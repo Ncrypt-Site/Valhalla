@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  Valhalla:
+    command: --docker
+    ports:
+      - "80:80"
+      - "443:443"
