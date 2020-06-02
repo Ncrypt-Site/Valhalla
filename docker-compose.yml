@@ -3,12 +3,12 @@ version: '3'
 services:
   Valhalla:
     image: traefik:v1.7
-    command: --api --docker
-    ports:
-      - "80:80"
-      - "8080:8080"
+    networks:
+      - web
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./.config/traefik/traefik.toml:/traefik.toml
+      - ./.config/traefik/acme.json:/acme.json
 
   Moneta:
     image: ${MONETA_IMAGE}
@@ -22,13 +22,36 @@ services:
       - NCRYPT_API_REDIS_PORT=${NCRYPT_API_REDIS_PORT}
       - NCRYPT_API_REDIS_DB=${NCRYPT_API_REDIS_DB}
       - NCRYPT_API_REDIS_PASSWORD=${NCRYPT_API_REDIS_PASSWORD}
+    expose:
+      - "1990"
+    networks:
+      - web
+      - default
     labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
       - "traefik.frontend.rule=Host:api.ncrypt.site"
+      - "traefik.basic.port=1990"
+      - "traefik.basic.protocol=http"
 
   Redis:
     image: redis:6-alpine
+    labels:
+      - "traefik.enable=false"
 
   Aphrodite:
     image: ${APHRODITE_IMAGE}
+    expose:
+      - "80"
+    networks:
+      - web
     labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
       - "traefik.frontend.rule=Host:ncrypt.site"
+      - "traefik.basic.port=80"
+      - "traefik.basic.protocol=http"
+
+networks:
+  web:
+    external: true
