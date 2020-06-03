@@ -5,6 +5,8 @@ services:
     image: traefik:v1.7
     networks:
       - web
+    labels:
+      - "traefik.enable=false"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.config/traefik/traefik.toml:/traefik.toml
