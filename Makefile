@@ -13,3 +13,6 @@ stop:
 
 teardown: stop
 	docker-compose rm --force
+
+status:
+	docker-compose ps
