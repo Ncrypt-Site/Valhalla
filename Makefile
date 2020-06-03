@@ -14,5 +14,9 @@ stop:
 teardown: stop
 	docker-compose rm --force
 
+reload-local: teardown run-local
+
+reload-production: teardown run-production
+
 status:
 	docker-compose ps
