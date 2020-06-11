@@ -38,8 +38,12 @@ services:
 
   Redis:
     image: redis:6-alpine
+    entrypoint: redis-server /usr/local/etc/redis/redis.conf
     labels:
       - "traefik.enable=false"
+    volumes:
+    - ./.config/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    - ./.storage/redis:/data
 
   Aphrodite:
     image: ${APHRODITE_IMAGE}
